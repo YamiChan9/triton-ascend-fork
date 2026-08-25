@@ -2149,6 +2149,7 @@ enum class A2A3WorkspaceTileCount : int64_t {
   Four = 4,
   Five = 5,
   Six = 6,
+  Nine = 9,
 };
 
 struct A2A3WorkspaceBufferSpec {
@@ -2168,7 +2169,7 @@ getA2A3LibdeviceWorkspaceSpecs() {
   // spec.
   static const llvm::StringMap<A2A3WorkspaceSpec> specs = {
       {"__hmf_tan_fp32",
-       {{A2A3WorkspaceTileCount::Five, A2A3WorkspaceElementType::F32, true}}},
+       {{A2A3WorkspaceTileCount::Six, A2A3WorkspaceElementType::F32, true}}},
       {"__hmf_tanh_fp32",
        {{A2A3WorkspaceTileCount::Three, A2A3WorkspaceElementType::F32, true}}},
       {"__hmf_copysign_fp32",
@@ -2200,7 +2201,7 @@ getA2A3LibdeviceWorkspaceSpecs() {
       {"__hmf_erfinv_fp32",
        {{A2A3WorkspaceTileCount::Four, A2A3WorkspaceElementType::F32, true}}},
       {"__hmf_tgamma_fp32",
-       {{A2A3WorkspaceTileCount::Six, A2A3WorkspaceElementType::F32, true}}},
+       {{A2A3WorkspaceTileCount::Nine, A2A3WorkspaceElementType::F32, true}}},
       {"__hmf_lgamma_fp32",
        {{A2A3WorkspaceTileCount::Six, A2A3WorkspaceElementType::F32, true}}},
   };
