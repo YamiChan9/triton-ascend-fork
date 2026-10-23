@@ -148,16 +148,15 @@ def _libdevice_elementwise(lib_name, lib_path, args, arg_type_symbol_dict, is_pu
         extern = _extern_elementwise
     else:
         extern = core.extern_elementwise
-    return extern(lib_name, lib_path, args, arg_type_symbol_dict,
-                  is_pure=is_pure, _semantic=_semantic)
+    return extern(lib_name, lib_path, args, arg_type_symbol_dict, is_pure=is_pure, _semantic=_semantic)
 
 
 def _extern_elementwise(lib_name, lib_path, args, arg_type_symbol_dict, is_pure, _semantic=None):
     args = [_semantic.to_tensor(arg) for arg in args]
     symbol = arg_type_symbol_dict[tuple(arg.dtype for arg in args)][0]
     spec = _A2A3_LIBDEVICE_WORKSPACE_SPECS.get(symbol)
-    result = core.extern_elementwise(lib_name, lib_path, args, arg_type_symbol_dict,
-                                     is_pure=is_pure, _semantic=_semantic)
+    result = core.extern_elementwise(lib_name, lib_path, args, arg_type_symbol_dict, is_pure=is_pure,
+                                     _semantic=_semantic)
     # Mixed dispatch tables (e.g. tanh) can also select a legacy symbol.
     # Those paths must not access workspace-specific builder APIs.
     if spec is None:
@@ -1486,7 +1485,8 @@ def fast_dividef(arg0, arg1, _semantic=None):
     """
     arg0 = _semantic.to_tensor(arg0)
     arg1 = _semantic.to_tensor(arg1)
-    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
+    if (_is_a5_target(_semantic)
+            or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
         return _libdevice_elementwise("", "", [arg0, arg1], {
             (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_fast_divide_fp32", core.dtype("fp32")),
         }, is_pure=True, _semantic=_semantic)
@@ -2386,7 +2386,8 @@ def atan2(arg0, arg1, _semantic=None):
     """
     arg0 = _semantic.to_tensor(arg0)
     arg1 = _semantic.to_tensor(arg1)
-    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
+    if (_is_a5_target(_semantic)
+            or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
         return _libdevice_elementwise("", "", [arg0, arg1], {
             (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_atan2_fp32", core.dtype("fp32")),
         }, is_pure=True, _semantic=_semantic)
@@ -2756,7 +2757,8 @@ def hypot(arg0: core.tensor, arg1: core.tensor, _semantic=None):
     """
     arg0 = _semantic.to_tensor(arg0)
     arg1 = _semantic.to_tensor(arg1)
-    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
+    if (_is_a5_target(_semantic)
+            or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
         return _libdevice_elementwise("", "", [arg0, arg1], {
             (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_hypot_fp32", core.dtype("fp32")),
         }, is_pure=True, _semantic=_semantic)
@@ -3737,7 +3739,8 @@ def copysign(arg0: core.tensor, arg1: core.tensor, _semantic=None):
     """
     arg0 = _semantic.to_tensor(arg0)
     arg1 = _semantic.to_tensor(arg1)
-    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
+    if (_is_a5_target(_semantic)
+            or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
         return _libdevice_elementwise("", "", [arg0, arg1], {
             (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_copysign_fp32", core.dtype("fp32")),
         }, is_pure=True, _semantic=_semantic)
@@ -3856,7 +3859,8 @@ def abs(arg0, _semantic=None):
     :rtype: ``int32``, ``float32``
     """
     arg0 = _semantic.to_tensor(arg0)
-    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype in (core.dtype("fp32"), core.dtype("int32")):
+    if (_is_a5_target(_semantic)
+            or _is_a3_target(_semantic)) and arg0.dtype in (core.dtype("fp32"), core.dtype("int32")):
         return _libdevice_elementwise(
             "", "", [arg0], {
                 (core.dtype("fp32"), ): ("__hmf_abs_fp32", core.dtype("fp32")),
@@ -3932,7 +3936,8 @@ def div_rn(arg0, arg1, _semantic=None):
     """
     arg0 = _semantic.to_tensor(arg0)
     arg1 = _semantic.to_tensor(arg1)
-    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
+    if (_is_a5_target(_semantic)
+            or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype("fp32"):
         return _libdevice_elementwise("", "", [arg0, arg1], {
             (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_div_rn_fp32", core.dtype("fp32")),
         }, is_pure=True, _semantic=_semantic)
@@ -4046,8 +4051,8 @@ def fma(arg0, arg1, arg2, _semantic=None):
     arg0 = _semantic.to_tensor(arg0)
     arg1 = _semantic.to_tensor(arg1)
     arg2 = _semantic.to_tensor(arg2)
-    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32") and arg1.dtype == core.dtype(
-            "fp32") and arg2.dtype == core.dtype("fp32"):
+    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype == core.dtype(
+            "fp32") and arg1.dtype == core.dtype("fp32") and arg2.dtype == core.dtype("fp32"):
         return _libdevice_elementwise("", "", [arg0, arg1, arg2], {
             (core.dtype("fp32"), core.dtype("fp32"), core.dtype("fp32")): ("__hmf_fma_fp32", core.dtype("fp32")),
         }, is_pure=True, _semantic=_semantic)
