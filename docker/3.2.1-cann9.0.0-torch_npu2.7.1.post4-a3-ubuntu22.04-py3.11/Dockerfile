@@ -7,7 +7,8 @@ FROM ubuntu:22.04 AS python-installer
 # Python Environment variables
 ENV PATH=/usr/local/python3.11.15/bin:${PATH}
 
-RUN apt-get update \
+RUN sed -i 's|http://ports.ubuntu.com/ubuntu-ports|http://mirrors.ustc.edu.cn/ubuntu-ports|g' /etc/apt/sources.list \
+    && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
         apt-transport-https \
         ca-certificates \
@@ -31,7 +32,7 @@ RUN apt-get update \
     && rm -rf /tmp/*
 
 # Install Python
-RUN curl -fsSL https://repo.huaweicloud.com/python/3.11.15/Python-3.11.15.tgz -o /tmp/Python-3.11.15.tgz && \
+RUN curl -kfsSL https://repo.huaweicloud.com/python/3.11.15/Python-3.11.15.tgz -o /tmp/Python-3.11.15.tgz && \
     tar -xf /tmp/Python-3.11.15.tgz -C /tmp && \
     cd /tmp/Python-3.11.15 && \
     mkdir -p /usr/local/python3.11.15/lib && \
@@ -42,6 +43,11 @@ RUN curl -fsSL https://repo.huaweicloud.com/python/3.11.15/Python-3.11.15.tgz -o
     ln -sf /usr/local/python3.11.15/bin/pip3.11 /usr/local/python3.11.15/bin/pip3 && \
     ln -sf /usr/local/python3.11.15/bin/python3 /usr/local/python3.11.15/bin/python && \
     ln -sf /usr/local/python3.11.15/bin/pip3 /usr/local/python3.11.15/bin/pip && \
+    printf '%s\n' \
+        '[global]' \
+        'trusted-host = mirrors.ustc.edu.cn download.pytorch.org triton-ascend.osinfra.cn pypi.org files.pythonhosted.org' \
+        > /etc/pip.conf && \
+    printf '[http]\n\tsslVerify = false\n' > /etc/gitconfig && \
     rm -rf /tmp/*
 
 # Stage 2: Install CANN
@@ -79,8 +85,8 @@ RUN ARCH=$(case "${TARGETPLATFORM}" in \
     esac) && \
     CANN_TOOLKIT_URL=https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.0.0/Ascend-cann-toolkit_9.0.0_linux-${ARCH}.run && \
     CANN_OPS_URL=https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.0.0/Ascend-cann-A3-ops_9.0.0_linux-${ARCH}.run && \
-    wget --quiet --header="Referer: https://www.hiascend.com/" ${CANN_TOOLKIT_URL} -O ~/Ascend-cann-toolkit.run && \
-    wget --quiet --header="Referer: https://www.hiascend.com/" ${CANN_OPS_URL} -O ~/Ascend-cann-ops.run
+    wget --quiet --no-check-certificate --header="Referer: https://www.hiascend.com/" ${CANN_TOOLKIT_URL} -O ~/Ascend-cann-toolkit.run && \
+    wget --quiet --no-check-certificate --header="Referer: https://www.hiascend.com/" ${CANN_OPS_URL} -O ~/Ascend-cann-ops.run
 
 # Note: Install CANN Toolkit Development Kit Package
 RUN chmod +x ~/Ascend-cann-toolkit.run && \
@@ -200,7 +206,8 @@ ENV CMAKE_PREFIX_PATH=${TOOLCHAIN_HOME}/tools/tikicpulib/lib/cmake:${ASCEND_TOOL
 
 SHELL [ "/bin/bash", "-c" ]
 
-RUN apt-get update \
+RUN sed -i 's|http://ports.ubuntu.com/ubuntu-ports|http://mirrors.ustc.edu.cn/ubuntu-ports|g' /etc/apt/sources.list \
+    && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
         apt-transport-https \
         ca-certificates \
