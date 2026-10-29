@@ -270,7 +270,7 @@ COPY --from=cann-installer /usr/local/python3.11.15 /usr/local/python3.11.15
 COPY --from=cann-installer /usr/local/Ascend /usr/local/Ascend
 COPY --from=cann-installer /etc/Ascend /etc/Ascend
 COPY --from=llvm-installer /usr/local/llvm-install /usr/local/llvm-install
-COPY --chown=root:root docker/copyright.sh /etc/profile.d/copyright.sh
+COPY --chown=root:root copyright.sh /etc/profile.d/copyright.sh
 
 # Note: Set environment variables
 RUN \
