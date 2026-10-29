@@ -1,4 +1,4 @@
-# Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+﻿# Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -472,8 +472,8 @@ def pow(arg0, arg1, _semantic=None):
     if arg1.dtype == core.dtype("int32"):
         arg1 = _semantic.cast(arg1, arg0.dtype)
 
-    if arg0.dtype == core.dtype("fp32") and (
-            _is_a5_target(_semantic) or _is_a3_target(_semantic) or _is_a6_target(_semantic)):
+    if arg0.dtype == core.dtype("fp32") and (_is_a5_target(_semantic) or _is_a3_target(_semantic)
+                                             or _is_a6_target(_semantic)):
         return _libdevice_elementwise(
             "", "", [arg0, arg1], {
                 (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_pow_fp32", core.dtype("fp32")),
@@ -2415,8 +2415,8 @@ def acos(arg0: core.tensor, _semantic=None):
     :return: The inverse cosine of the input parameter, in the range [0, π] radians.
     :rtype: ``float32``
     """
-    if arg0.dtype == core.dtype("fp32") and (
-            _is_a5_target(_semantic) or _is_a3_target(_semantic) or _is_a6_target(_semantic)):
+    if arg0.dtype == core.dtype("fp32") and (_is_a5_target(_semantic) or _is_a3_target(_semantic)
+                                             or _is_a6_target(_semantic)):
         return _libdevice_elementwise("", "", [arg0], {
             (core.dtype("fp32"), ): ("__hmf_acos_fp32", core.dtype("fp32")),
         }, is_pure=True, workspace=(5, core.float32, True), _semantic=_semantic)
@@ -2633,8 +2633,8 @@ def nextafter(arg0: core.tensor, arg1: core.tensor, _semantic=None):
     :return: The next representable floating-point number.
     :rtype: ``float32``
     """
-    if arg0.dtype == core.dtype("fp32") and (
-            _is_a5_target(_semantic) or _is_a3_target(_semantic) or _is_a6_target(_semantic)):
+    if arg0.dtype == core.dtype("fp32") and (_is_a5_target(_semantic) or _is_a3_target(_semantic)
+                                             or _is_a6_target(_semantic)):
         return _libdevice_elementwise("", "", [arg0, arg1], {
             (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_nextafter_fp32", core.dtype("fp32")),
         }, is_pure=True, workspace=(8, core.int32, False), _semantic=_semantic)
@@ -3796,8 +3796,8 @@ def abs(arg0, _semantic=None):
     :rtype: ``int32``, ``float32``
     """
     arg0 = _semantic.to_tensor(arg0)
-    if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype in (
-            core.dtype("fp32"), core.dtype("int32")):
+    if (_is_a5_target(_semantic)
+            or _is_a3_target(_semantic)) and arg0.dtype in (core.dtype("fp32"), core.dtype("int32")):
         return core.extern_elementwise(
             "", "", [arg0], {
                 (core.dtype("fp32"), ): ("__hmf_abs_fp32", core.dtype("fp32")),
