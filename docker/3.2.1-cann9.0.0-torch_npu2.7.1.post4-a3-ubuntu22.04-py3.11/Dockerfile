@@ -154,11 +154,21 @@ RUN pip3 install --no-cache-dir \
 
 RUN \
     git config --global http.postBuffer 524288000 && \
+    git config --global http.version HTTP/1.1 && \
     git config --global http.lowSpeedLimit 0 && \
     git config --global http.lowSpeedTime 1800 && \
-    git clone --no-checkout https://github.com/llvm/llvm-project.git && \
-    cd llvm-project && \
-    git checkout b5cc222d7429fe6f18c787f633d5262fac2e676f && \
+    mkdir llvm-project && cd llvm-project && \
+    git init && \
+    git remote add origin https://github.com/llvm/llvm-project.git && \
+    fetched=0 && \
+    for attempt in 1 2 3 4 5; do \
+        if git fetch --depth 1 origin b5cc222d7429fe6f18c787f633d5262fac2e676f; then \
+            fetched=1 && break; \
+        fi; \
+        echo "git fetch failed, retry ${attempt}" && sleep 15; \
+    done && \
+    test "$fetched" = 1 && \
+    git checkout FETCH_HEAD && \
     mkdir build && \
     cd build && \
     export LLVM_INSTALL_PREFIX=/usr/local/llvm-install && \
