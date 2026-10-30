@@ -926,7 +926,7 @@ def sub_rn(arg0, arg1, _semantic=None):
     :return: The subtraction result rounded to the nearest even number.
     :rtype: ``float32``
     """
-    if not _is_a5_target(_semantic):
+    if not (_is_a5_target(_semantic) or _is_a3_target(_semantic)):
         core.static_print("libdevice.sub_rn for simd is unsupported for now.")
         core.static_assert(False)
     return core.extern_elementwise("", "", [arg0, arg1], {
@@ -966,7 +966,7 @@ def sub_rd(arg0, arg1, _semantic=None):
     :return: The subtraction result rounded down.
     :rtype: ``float32``
     """
-    if not _is_a5_target(_semantic):
+    if not (_is_a5_target(_semantic) or _is_a3_target(_semantic)):
         core.static_print("libdevice.sub_rd for simd is unsupported for now.")
         core.static_assert(False)
     return core.extern_elementwise("", "", [arg0, arg1], {
