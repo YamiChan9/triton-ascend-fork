@@ -487,6 +487,27 @@ def pow(arg0, arg1, _semantic=None):
         }, is_pure=True, _semantic=_semantic)
 
 
+@core.extern
+def powif(arg0, arg1, _semantic=None):
+    """
+    Computes x raised to an integer power.
+
+    :param arg0: ``x``. Supported dtype(s): ``float32``.
+    :type arg0: scalar or tl.tensor
+    :param arg1: ``y``. Supported dtype(s): ``int32``.
+    :type arg1: scalar or tl.tensor
+    :return: x raised to the integer power y.
+    :rtype: ``float32``
+    """
+    if not (_is_a5_target(_semantic) or _is_a3_target(_semantic)):
+        core.static_print("libdevice.powif for simd is unsupported for now.")
+        core.static_assert(False)
+    return _libdevice_elementwise(
+        "", "", [arg0, arg1], {
+            (core.dtype("fp32"), core.dtype("int32")): ("__hmf_powi_fp32", core.dtype("fp32")),
+        }, is_pure=True, workspace=(9, core.float32, True), _semantic=_semantic)
+
+
 @core._tensor_member_fn
 @jit
 @math._add_math_1arg_docstr("isfinited")
@@ -773,7 +794,10 @@ def hadd(arg0, arg1, _semantic=None):
         "", "", [arg0, arg1], {
             (core.dtype("int32"), core.dtype("int32")): ("__hmf_hadd_i32", core.dtype("int32")),
             (core.dtype("uint32"), core.dtype("uint32")): ("__hmf_uhadd_u32", core.dtype("uint32")),
-        }, is_pure=True, workspace={"__hmf_hadd_i32": (4, core.int32, True)}, _semantic=_semantic)
+        }, is_pure=True, workspace={
+            "__hmf_hadd_i32": (4, core.int32, True),
+            "__hmf_uhadd_u32": (4, core.int32, True),
+        }, _semantic=_semantic)
 
 
 @core.extern
@@ -795,7 +819,10 @@ def rhadd(arg0, arg1, _semantic=None):
         "", "", [arg0, arg1], {
             (core.dtype("int32"), core.dtype("int32")): ("__hmf_rhadd_i32", core.dtype("int32")),
             (core.dtype("uint32"), core.dtype("uint32")): ("__hmf_urhadd_u32", core.dtype("uint32")),
-        }, is_pure=True, workspace={"__hmf_rhadd_i32": (5, core.int32, True)}, _semantic=_semantic)
+        }, is_pure=True, workspace={
+            "__hmf_rhadd_i32": (5, core.int32, True),
+            "__hmf_urhadd_u32": (5, core.int32, True),
+        }, _semantic=_semantic)
 
 
 @core.extern
