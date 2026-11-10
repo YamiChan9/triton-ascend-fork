@@ -742,7 +742,7 @@ def ffs(arg0, _semantic=None):
 
     :param arg0: ``x``. Supported dtype(s): ``int32``.
     :type arg0: scalar or tl.tensor
-    :return: The index of the lowest bit set to 1. Range: [0, 32].
+    :return: The index of the lowest bit set to 1. Range: [0, 32] for int32, [0, 64] for int64.
     :rtype: ``int32``
     """
     arg0 = _semantic.to_tensor(arg0)
@@ -752,7 +752,10 @@ def ffs(arg0, _semantic=None):
             "", "", [arg0], {
                 (core.dtype("int32"), ): ("__hmf_ffs_i32", core.dtype("int32")),
                 (core.dtype("int64"), ): ("__hmf_ffs_i64", core.dtype("int32")),
-            }, is_pure=True, workspace={"__hmf_ffs_i32": (6, core.int32, True)}, _semantic=_semantic)
+            }, is_pure=True, workspace={
+                "__hmf_ffs_i32": (6, core.int32, True),
+                "__hmf_ffs_i64": (12, core.int32, False),
+            }, _semantic=_semantic)
     core.static_print(f"libdevice.ffs for {dtype} is unsupported for now.")
     core.static_assert(False)
 
