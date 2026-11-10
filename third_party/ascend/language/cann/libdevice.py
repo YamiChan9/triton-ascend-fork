@@ -352,7 +352,7 @@ def tanh(arg0, _semantic=None):
     if _is_a3_target(_semantic) and original_dtype == core.dtype("fp32"):
         res = _libdevice_elementwise("", "", [arg0], {
             (core.dtype("fp32"), ): ("__hmf_tanh_fp32", core.dtype("fp32")),
-        }, is_pure=True, workspace=(3, core.float32, True), _semantic=_semantic)
+        }, is_pure=True, workspace=(1, core.float32, True), _semantic=_semantic)
     else:
         if _is_libdevice_simt_enabled(_semantic) or (_is_a6_target(_semantic) and original_dtype == core.dtype("fp32")):
             dispatch = {
