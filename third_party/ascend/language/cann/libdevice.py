@@ -300,7 +300,7 @@ def tan(arg0, _semantic=None):
             and arg0.dtype == core.dtype("fp32")):
         return _libdevice_elementwise("", "", [arg0], {
             (core.dtype("fp32"), ): ("__hmf_tan_fp32", core.dtype("fp32")),
-        }, is_pure=True, workspace=(8, core.float32, False), _semantic=_semantic)
+        }, is_pure=True, workspace=(8, core.float32, True), _semantic=_semantic)
     return core.extern_elementwise(
         "", "", [arg0], {
             (core.dtype("fp32"), ): ("__hmf_tanf", core.dtype("fp32")),
@@ -3392,7 +3392,7 @@ def gamma(arg0, _semantic=None):
     if (_is_a5_target(_semantic) or _is_a3_target(_semantic)) and arg0.dtype == core.dtype("fp32"):
         return _libdevice_elementwise("", "", [arg0], {
             (core.dtype("fp32"), ): ("__hmf_tgamma_fp32", core.dtype("fp32")),
-        }, is_pure=True, workspace=(9, core.float32, False), _semantic=_semantic)
+        }, is_pure=True, workspace=(9, core.float32, True), _semantic=_semantic)
     else:
         arg0_scalar_ty = arg0.type.scalar
         arg0 = _semantic.to_tensor(arg0)
@@ -3454,7 +3454,7 @@ def tgamma(arg0, _semantic=None):
         core.static_assert(False)
     return _libdevice_elementwise("", "", [arg0], {
         (core.dtype("fp32"), ): ("__hmf_tgamma_fp32", core.dtype("fp32")),
-    }, is_pure=True, workspace=(9, core.float32, False), _semantic=_semantic)
+    }, is_pure=True, workspace=(9, core.float32, True), _semantic=_semantic)
 
 
 # Note:

@@ -44,7 +44,7 @@
 
 // A2A3-LABEL: func.func @test_tgamma_2048
 // A2A3: hivm.hir.custom
-// A2A3-SAME: extra_buffers_sizes = [576]
+// A2A3-SAME: extra_buffers_sizes = [18432]
 // A2A3-SAME: extra_buffers_types = [f32]
 // A2A3-SAME: symbol = "tgamma_fp32"
 
@@ -366,7 +366,7 @@ module attributes {hacc.target = #hacc.target<"Ascend910B2">} {
   tt.func @test_tgamma_2048(%arg0: tensor<2048xf32>, %out: !tt.ptr<f32>) {
     %0 = tt.extern_elementwise %arg0 {
       libname = "", libpath = "", pure = true, symbol = "__hmf_tgamma_fp32",
-      extra_buffers_types = [f32], extra_buffers_sizes = [576]
+      extra_buffers_types = [f32], extra_buffers_sizes = [18432]
     } : (tensor<2048xf32>) -> tensor<2048xf32>
     %out_ptrs = tt.splat %out : !tt.ptr<f32> -> tensor<2048x!tt.ptr<f32>>
     tt.store %out_ptrs, %0 : tensor<2048x!tt.ptr<f32>>
