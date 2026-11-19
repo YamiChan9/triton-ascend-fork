@@ -1601,7 +1601,7 @@ def fast_powf(arg0, arg1, _semantic=None):
         core.static_assert(False)
     return _libdevice_elementwise("", "", [arg0, arg1], {
         (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_fast_pow_fp32", core.dtype("fp32")),
-    }, is_pure=True, workspace=(8, core.float32, False), _semantic=_semantic)
+    }, is_pure=True, workspace=(5, core.float32, True), _semantic=_semantic)
 
 
 @core.extern
@@ -2167,7 +2167,7 @@ def float2ull_rn(arg0, _semantic=None):
         core.static_assert(False)
     return _libdevice_elementwise("", "", [arg0], {
         (core.dtype("fp32"), ): ("__hmf_float2ull_rn_fp32", core.dtype("uint64")),
-    }, is_pure=True, workspace=(5, core.int32, False), _semantic=_semantic)
+    }, is_pure=True, workspace=(3, core.int32, True), _semantic=_semantic)
 
 
 @core.extern
@@ -2185,7 +2185,7 @@ def float2ull_rz(arg0, _semantic=None):
         core.static_assert(False)
     return _libdevice_elementwise("", "", [arg0], {
         (core.dtype("fp32"), ): ("__hmf_float2ull_rz_fp32", core.dtype("uint64")),
-    }, is_pure=True, workspace=(5, core.int32, False), _semantic=_semantic)
+    }, is_pure=True, workspace=(3, core.int32, True), _semantic=_semantic)
 
 
 @core.extern
@@ -2203,7 +2203,7 @@ def float2ull_rd(arg0, _semantic=None):
         core.static_assert(False)
     return _libdevice_elementwise("", "", [arg0], {
         (core.dtype("fp32"), ): ("__hmf_float2ull_rd_fp32", core.dtype("uint64")),
-    }, is_pure=True, workspace=(5, core.int32, False), _semantic=_semantic)
+    }, is_pure=True, workspace=(3, core.int32, True), _semantic=_semantic)
 
 
 @core.extern
@@ -2221,7 +2221,7 @@ def float2ull_ru(arg0, _semantic=None):
         core.static_assert(False)
     return _libdevice_elementwise("", "", [arg0], {
         (core.dtype("fp32"), ): ("__hmf_float2ull_ru_fp32", core.dtype("uint64")),
-    }, is_pure=True, workspace=(5, core.int32, False), _semantic=_semantic)
+    }, is_pure=True, workspace=(3, core.int32, True), _semantic=_semantic)
 
 
 @core.extern
