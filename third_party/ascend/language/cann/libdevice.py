@@ -1619,7 +1619,7 @@ def fmod(arg0, arg1, _semantic=None):
     if False:  # (_is_a5_target(_semantic) or _is_a3_target(_semantic) or _is_a6_target(_semantic)):
         return _libdevice_elementwise("", "", [arg0, arg1], {
             (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_fmod_fp32", core.dtype("fp32")),
-        }, is_pure=True, workspace=(8, core.float32, True), _semantic=_semantic)
+        }, is_pure=True, workspace=(2, core.float32, True), _semantic=_semantic)
     arg0 = _semantic.to_tensor(arg0)
     arg1 = _semantic.to_tensor(arg1)
     ret = _semantic.mod(arg0, arg1)
