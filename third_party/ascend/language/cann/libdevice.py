@@ -1601,7 +1601,7 @@ def fast_powf(arg0, arg1, _semantic=None):
         core.static_assert(False)
     return _libdevice_elementwise("", "", [arg0, arg1], {
         (core.dtype("fp32"), core.dtype("fp32")): ("__hmf_fast_pow_fp32", core.dtype("fp32")),
-    }, is_pure=True, workspace=(5, core.float32, True), _semantic=_semantic)
+    }, is_pure=True, workspace=(6, core.float32, True), _semantic=_semantic)
 
 
 @core.extern
