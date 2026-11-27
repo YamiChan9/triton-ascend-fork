@@ -41,6 +41,23 @@ def triton_acos(in_ptr0, out_ptr0, XBLOCK: tl.constexpr, XBLOCK_SUB: tl.constexp
         tl.store(out_ptr0 + (x0), tmp1, None)
 
 
+@pytest.mark.parametrize("block_size", [32, 128])
+def test_acos_a2a3_fp16(block_size):
+    arch = triton.runtime.driver.active.get_current_target().arch
+    if not arch.startswith(("Ascend910B", "Ascend910_93")):
+        pytest.skip("requires the A2/A3 FP16 CCE ABI")
+
+    inputs = torch.linspace(-1, 1, block_size).half()
+    inputs[:5] = torch.tensor([1.0, -1.0, -0.0, 0.0, float("nan")], dtype=torch.float16)
+    device_inputs = inputs.npu()
+    output = torch.empty_like(device_inputs)
+    compiled = triton_acos[(1,)](device_inputs, output, block_size, block_size)
+    assert "__hmf_acos_fp16" in compiled.asm["ttir"]
+    actual = output.cpu()
+    torch.testing.assert_close(actual, inputs.float().acos().half(), rtol=1e-3, atol=1e-4, equal_nan=True)
+    assert actual[0] == 0 and not torch.signbit(actual[0])
+
+
 @pytest.mark.parametrize('param_list', ['float32', 'float16', 'bfloat16'])
 def test_asinh_special(param_list):
     dtype = param_list

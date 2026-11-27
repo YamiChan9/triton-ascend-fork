@@ -41,6 +41,25 @@ def asin_kernel(x_ptr, y_ptr, n_elements, BLOCK_SIZE: tl.constexpr):
     tl.store(y_ptr + offsets, y, mask=mask)
 
 
+@pytest.mark.parametrize("block_size", [32, 128])
+def test_asin_a2a3_fp16(block_size):
+    arch = triton.runtime.driver.active.get_current_target().arch
+    if not arch.startswith(("Ascend910B", "Ascend910_93")):
+        pytest.skip("requires the A2/A3 FP16 CCE ABI")
+
+    inputs = torch.linspace(-1, 1, block_size + 7).half()
+    inputs[:5] = torch.tensor([-0.0, 0.0, 1.0, -1.0, float("inf")], dtype=torch.float16)
+    device_inputs = inputs.npu()
+    output = torch.empty_like(device_inputs)
+    compiled = asin_kernel[(triton.cdiv(inputs.numel(), block_size),)](
+        device_inputs, output, inputs.numel(), block_size
+    )
+    assert "__hmf_asin_fp16" in compiled.asm["ttir"]
+    actual = output.cpu()
+    torch.testing.assert_close(actual, inputs.float().asin().half(), rtol=1e-3, atol=1e-4, equal_nan=True)
+    assert torch.equal(torch.signbit(actual[:2]), torch.signbit(inputs[:2]))
+
+
 @pytest.mark.parametrize('shape', [
     (12, 16),
 ])

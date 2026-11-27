@@ -2414,11 +2414,20 @@ def acos(arg0: core.tensor, _semantic=None):
     """
     Computes the inverse cosine (arccos) of the input parameter.
 
-    :param arg0: ``x``. Supported dtype(s): ``float32``.
+    :param arg0: ``x``. Supports ``float32``, ``float16`` and ``bfloat16``.
     :type arg0: scalar or tl.tensor
     :return: The inverse cosine of the input parameter, in the range [0, π] radians.
-    :rtype: ``float32``
+    :rtype: Same dtype as the input.
     """
+    arg0 = _semantic.to_tensor(arg0)
+    if arg0.dtype == core.float16 and _is_a3_target(_semantic):
+        # The FP16 CCE entry point reuses fixed scratch for each 64-lane tile.
+        result = _libdevice_elementwise("", "", [arg0], {
+            (core.float16, ): ("__hmf_acos_fp16", core.float16),
+        }, is_pure=True, workspace=(10, core.float32, False), _semantic=_semantic)
+        # The CCE negation can produce -0 at x == 1. Keep acos(1) positive zero.
+        return math.abs(result, _semantic=_semantic)
+
     if arg0.dtype == core.dtype("fp32") and (_is_a5_target(_semantic) or _is_a3_target(_semantic)
                                              or _is_a6_target(_semantic)):
         return _libdevice_elementwise("", "", [arg0], {
@@ -2431,7 +2440,6 @@ def acos(arg0: core.tensor, _semantic=None):
         eps = 1e-8
 
         # |x| < 0.5, acos(x) = pi/2 - [x + x*x²*(0.1666667 + x²*(0.075 + x²*(0.0446429 + 0.0303810*x²))]
-        arg0 = _semantic.to_tensor(arg0)
         abs_x = math.abs(arg0, _semantic=_semantic)
         dtype = arg0.dtype
         arg0_2 = _semantic.mul(arg0, arg0, True)
@@ -3598,19 +3606,25 @@ def cospi(arg0, _semantic=None):
 
 
 @core.builtin
-@math._check_dtype(dtypes=[
-    "fp32",
-])
+@math._check_dtype(dtypes=["fp16", "fp32"])
 def asin(arg0: core.tensor, _semantic=None):
     """
     Computes the inverse sine (arcsin) of the input parameter.
 
-    :param arg0: ``x``. Supported dtype(s): ``float32``.
+    :param arg0: ``x``. Supports ``float32`` and A2/A3 SIMD ``float16``.
     :type arg0: scalar or tl.tensor
     :return: The inverse sine of the input parameter, in the range [-π/2, π/2] radians.
-    :rtype: ``float32``
+    :rtype: Same dtype as the input.
     """
     arg0 = _semantic.to_tensor(arg0)
+    if arg0.dtype == core.float16:
+        if not _is_a3_target(_semantic):
+            raise ValueError("asin float16 requires an A2/A3 target")
+        # The FP16 CCE entry point reuses fixed scratch for each 64-lane tile.
+        return _libdevice_elementwise("", "", [arg0], {
+            (core.float16, ): ("__hmf_asin_fp16", core.float16),
+        }, is_pure=True, workspace=(9, core.float32, False), _semantic=_semantic)
+
     if ((_is_a5_target(_semantic) or _is_a3_target(_semantic) or _is_a6_target(_semantic))
             and arg0.dtype == core.dtype("fp32")):
         return _libdevice_elementwise("", "", [arg0], {
